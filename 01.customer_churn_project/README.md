@@ -27,7 +27,6 @@ Firstly, install the dependencies needed to run this codebase:
 pip install -r requirements.txt
 ```
 
-
 **Modelling notebook**
 - `churn_notebook.ipynb`
     - Loads in the bank data.
@@ -46,9 +45,6 @@ pip install -r requirements.txt
 
 
 ### Testing
-- `churn_library.py`
-    - You can run tests by running `ipython churn_library.py`
-
 - `churn_script_logging_and_tests.py`
     - this file contains test functions to unit test each utility in `churn_library.py`.
     - You can run tests by running `ipython churn_script_logging_and_tests.py`
