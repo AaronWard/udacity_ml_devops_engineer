@@ -12,6 +12,7 @@ Date: December 2021
 
 # import libraries
 import os
+import time
 import logging
 from abc import ABC, abstractmethod
 
@@ -32,10 +33,11 @@ from constants import keep_cols, cat_columns
 sns.set()
 
 logging.basicConfig(
-    filename='./logs/churn_library.log',
+    filename=f"./logs/churn_library_{time.strftime('%b_%d_%Y_%H_%M_%S')}.log",
     level=logging.INFO,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
+
 
 def import_data(pth):
     '''
@@ -53,6 +55,7 @@ def import_data(pth):
         logging.error(f"ERROR: file {pth} not found")
         raise err
 
+
 def perform_eda(data_frame):
     '''
     perform eda on data_frame and save figures to images folder
@@ -64,32 +67,28 @@ def perform_eda(data_frame):
     '''
     image_path = "./images/eda"
 
-
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
     plt.title('Histogram of churn/non-churn members')
     data_frame['Churn'].hist()
     plt.savefig(os.path.join(image_path, 'churn_hist.png'))
 
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
     plt.title('Histogram of customers age')
     data_frame['Customer_Age'].hist()
     plt.savefig(os.path.join(image_path, 'age_hist.png'))
 
-
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
     plt.title('Volume of marital status')
     data_frame.Marital_Status.value_counts('normalize').plot(kind='bar')
     plt.savefig(os.path.join(image_path, 'marital_status_bar.png'))
 
-
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
     sns.displot(data_frame['Total_Trans_Ct'], kde=True, height=10)
     plt.savefig(os.path.join(image_path, 'trans_distribution.png'))
 
-
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(20, 10))
     plt.title('Data heatmap')
-    sns.heatmap(data_frame.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+    sns.heatmap(data_frame.corr(), annot=False, cmap='Dark2_r', linewidths=2)
     plt.savefig(os.path.join(image_path, 'corr_heatmap.png'))
 
 
@@ -131,7 +130,7 @@ def perform_feature_engineering(data_frame):
     x = data_frame[keep_cols]
     y = data_frame['Churn']
 
-    return train_test_split(x, y, test_size= 0.3, random_state=42)
+    return train_test_split(x, y, test_size=0.3, random_state=42)
 
 
 #########################################################################
@@ -156,26 +155,55 @@ def classification_report_image(models):
     ax = plt.gca()
     [plot_roc_curve(model.load_model(), model.x_test, model.y_test,
                     ax=ax, alpha=0.8) for model in models]
-    plt.savefig(os.path.join(image_path,"classification_report.png"))
+    plt.savefig(os.path.join(image_path, "classification_report.png"))
     plt.close()
-
 
     for model in models:
         print(f'Generating classification report for {model.get_name()}')
         plt.rc('figure', figsize=(5, 5))
-        plt.text(x=0.01, y=1, s=str(f'{model.get_name()} Train'), fontdict={'fontsize': 10})
-        plt.text(x=0.01, y=0.5, s=str(classification_report(model.y_train, model.y_train_preds)),
-                 fontdict={'fontsize': 10}, fontproperties = 'monospace')
+        plt.text(
+            x=0.01,
+            y=1,
+            s=str(f'{model.get_name()} Train'),
+            fontdict={
+                'fontsize': 10})
+        plt.text(
+            x=0.01,
+            y=0.5,
+            s=str(
+                classification_report(
+                    model.y_train,
+                    model.y_train_preds)),
+            fontdict={
+                'fontsize': 10},
+            fontproperties='monospace')
 
-        plt.text(x=0.01, y=0.45, s=str(f'{model.get_name()} Test'), fontdict={'fontsize': 10})
-        plt.text(x=0.01, y=0.001, s=str(classification_report(model.y_test, model.y_test_preds)),
-                 fontdict={'fontsize': 10}, fontproperties = 'monospace')
+        plt.text(
+            x=0.01,
+            y=0.45,
+            s=str(f'{model.get_name()} Test'),
+            fontdict={
+                'fontsize': 10})
+        plt.text(
+            x=0.01,
+            y=0.001,
+            s=str(
+                classification_report(
+                    model.y_test,
+                    model.y_test_preds)),
+            fontdict={
+                'fontsize': 10},
+            fontproperties='monospace')
         plt.axis('off')
         plt.tight_layout()
-        plt.savefig(os.path.join(image_path,f"{model.get_name()}_classification_report.png" ))
+        plt.savefig(
+            os.path.join(
+                image_path,
+                f"{model.get_name()}_classification_report.png"))
         plt.close()
 
     print(f'\nImages save to {image_path}')
+
 
 def feature_importance_plot(model, output_pth=None):
     '''
@@ -196,30 +224,45 @@ def feature_importance_plot(model, output_pth=None):
     try:
         explainer = shap.TreeExplainer(loaded_model.best_estimator_)
         shap_values = explainer.shap_values(model.x_test)
-        plt.figure(figsize=(20,5))
-        shap.summary_plot(shap_values, model.x_test, plot_type="bar", show=False)
-        plt.savefig(os.path.join(output_pth, f"{model.get_name()}_shap_summary.png"))
+        plt.figure(figsize=(20, 5))
+        shap.summary_plot(
+            shap_values,
+            model.x_test,
+            plot_type="bar",
+            show=False)
+        plt.savefig(
+            os.path.join(
+                output_pth,
+                f"{model.get_name()}_shap_summary.png"))
         plt.close()
-
 
         # Calculate feature importances
         importances = loaded_model.best_estimator_.feature_importances_
         indices = np.argsort(importances)[::-1]
         names = [model.x_train.columns[i] for i in indices]
-        plt.figure(figsize=(20,5))
+        plt.figure(figsize=(20, 5))
         plt.title("Feature Importance")
         plt.ylabel('Importance')
         plt.bar(range(model.x_train.shape[1]), importances[indices])
         plt.xticks(range(model.x_train.shape[1]), names, rotation=90)
-        plt.savefig(os.path.join(output_pth, f"{model.get_name()}_feature_importances.png"))
+        plt.savefig(
+            os.path.join(
+                output_pth,
+                f"{model.get_name()}_feature_importances.png"))
         plt.close()
 
         print(f"Images saved to {output_pth}")
     except AttributeError:
-        print(f"Cant perform feature importance analysis using Shap with {model.get_name()}")
-        logging.error(f"ERROR: failed to perform feature engineering with {model.get_name()}")
+        """
+        AttributeError: 'LogisticRegression' object has no attribute 'best_estimator_'
+        """
+        print(
+            f"Cant perform feature importance analysis using Shap with {model.get_name()}")
+        logging.error(
+            f"ERROR: failed to perform feature engineering with {model.get_name()}")
 
 #########################################################################
+
 
 class Model(ABC):
     """
@@ -233,6 +276,7 @@ class Model(ABC):
     - load_model(): loads the model .pkl file
     - get_train_test_results(): returns a classification report
     """
+
     def __init__(self):
         self.model_name = None
         self.x_train = None
@@ -274,7 +318,11 @@ class Model(ABC):
             self.model_name = f'{self.get_name()}'
 
         print(f"Saving model to {self.model_path}")
-        joblib.dump(self.model, os.path.join(self.model_path, f"{self.model_name}.pkl"))
+        joblib.dump(
+            self.model,
+            os.path.join(
+                self.model_path,
+                f"{self.model_name}.pkl"))
 
     def load_model(self):
         '''
@@ -287,7 +335,10 @@ class Model(ABC):
             self.model_name = f'{self.get_name()}'
 
         print(f"Loading model from {self.model_path}")
-        return joblib.load(os.path.join(self.model_path, f"{self.model_name}.pkl"))
+        return joblib.load(
+            os.path.join(
+                self.model_path,
+                f"{self.model_name}.pkl"))
 
     def get_train_test_results(self):
         '''
@@ -298,6 +349,11 @@ class Model(ABC):
         print(classification_report(self.y_test, self.y_test_preds))
         print('train results')
         print(classification_report(self.y_train, self.y_train_preds))
+        return (
+            'test results',
+            classification_report(
+                self.y_test,
+                self.y_test_preds))
 
 
 class RandomForestModel(Model):
@@ -323,11 +379,14 @@ class RandomForestModel(Model):
         param_grid = {
             'n_estimators': [200, 500],
             'max_features': ['auto', 'sqrt'],
-            'max_depth' : [4,5,100],
-            'criterion' :['gini', 'entropy']
+            'max_depth': [4, 5, 100],
+            'criterion': ['gini', 'entropy']
         }
 
-        self.model = GridSearchCV(estimator=self.model, param_grid=param_grid, cv=5)
+        self.model = GridSearchCV(
+            estimator=self.model,
+            param_grid=param_grid,
+            cv=5)
         self.model.fit(self.x_train, self.y_train)
 
         self.y_train_preds = self.model.predict(self.x_train)
@@ -360,19 +419,27 @@ class LinearRegressionModel(Model):
 
 
 if __name__ == "__main__":
-    os.environ['QT_QPA_PLATFORM']='offscreen'
+    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
     DATA = import_data("./data/bank_data.csv")
-    DATA['Churn'] = DATA['Attrition_Flag'].apply(lambda val:
-                                                 0 if val == "Existing Customer" else 1)
+    DATA['Churn'] = DATA['Attrition_Flag'].apply(
+        lambda val: 0 if val == "Existing Customer" else 1)
     perform_eda(DATA)
     DATA = encoder_helper(DATA, cat_columns)
     X_TRAIN, X_TEST, Y_TRAIN, Y_TEST = perform_feature_engineering(DATA)
+
+    RF_MODEL = RandomForestModel(X_TRAIN,
+                                 X_TEST,
+                                 Y_TRAIN,
+                                 Y_TEST,
+                                 model_name="rf_test",
+                                 model_path='./test_output/')
+
     LR_MODEL = LinearRegressionModel(X_TRAIN,
-                                   X_TEST,
-                                   Y_TRAIN,
-                                   Y_TEST,
-                                   model_name="lr_test",
-                                   model_path='./test_output/')
+                                     X_TEST,
+                                     Y_TRAIN,
+                                     Y_TEST,
+                                     model_name="lr_test",
+                                     model_path='./test_output/')
     LR_MODEL.train_model()
     LR_MODEL.get_train_test_results()
     LR_MODEL.save_model()
