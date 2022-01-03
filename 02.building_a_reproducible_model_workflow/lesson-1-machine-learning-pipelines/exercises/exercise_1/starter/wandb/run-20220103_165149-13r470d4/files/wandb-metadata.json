@@ -1,0 +1,31 @@
+{
+    "os": "macOS-10.15.7-x86_64-i386-64bit",
+    "python": "3.9.7",
+    "heartbeatAt": "2022-01-03T16:51:50.401969",
+    "startedAt": "2022-01-03T16:51:49.307679",
+    "docker": null,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [
+        "--input_file",
+        "zen.txt",
+        "--artifact_name",
+        "zen_of_python",
+        "--artifact_type",
+        "text_file",
+        "--artifact_description",
+        "20 aphorisms about writing good python code"
+    ],
+    "state": "running",
+    "program": "/Users/award40/Desktop/udacity_ml_devops_engineer/02.building_a_reproducible_model_workflow/lesson-1-machine-learning-pipelines/exercises/exercise_1/starter/upload_artifact.py",
+    "codePath": "02.building_a_reproducible_model_workflow/lesson-1-machine-learning-pipelines/exercises/exercise_1/starter/upload_artifact.py",
+    "git": {
+        "remote": "https://github.com/AaronWard/udacity_ml_devops_engineer.git",
+        "commit": "cccdbd633df75d9f536506914aefff40740d80d2"
+    },
+    "email": null,
+    "root": "/Users/award40/Desktop/udacity_ml_devops_engineer",
+    "host": "LAMU02WH4RCHTD6.uhc.com.",
+    "username": "award40",
+    "executable": "/usr/local/opt/python@3.9/bin/python3.9"
+}
