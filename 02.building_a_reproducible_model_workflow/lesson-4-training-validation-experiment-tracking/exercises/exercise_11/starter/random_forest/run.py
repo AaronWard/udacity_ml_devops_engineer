@@ -36,6 +36,9 @@ def go(args):
     y = X.pop("genre")
 
     logger.info("Splitting train/val")
+    X.fillna(method = 'ffill', inplace = True)
+    y.fillna(method = 'ffill', inplace = True)
+
     X_train, X_val, y_train, y_val = train_test_split(
         X, y, test_size=0.3, stratify=y, random_state=42
     )
