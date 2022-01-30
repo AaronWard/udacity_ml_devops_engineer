@@ -4,7 +4,10 @@ import wandb
 import hydra
 from omegaconf import DictConfig
 
+'''
+https://towardsdatascience.com/complete-tutorial-on-how-to-use-hydra-in-machine-learning-projects-1c00efcc5b9b
 
+'''
 # This automatically reads in the configuration
 @hydra.main(config_name='config')
 def go(config: DictConfig):
