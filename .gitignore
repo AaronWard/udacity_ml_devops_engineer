@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+mlruns/
+wandb/
+outputs/
+artifacts
+.DS_Store
+*.DS_Store
+
 # Distribution / packaging
 .Python
 build/
