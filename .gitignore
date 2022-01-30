@@ -12,6 +12,9 @@ outputs/
 artifacts
 .DS_Store
 *.DS_Store
+multirun/
+clean_data.csv
+preprocessed_data.csv
 
 # Distribution / packaging
 .Python
